@@ -1,0 +1,37 @@
+{
+  "taxYear": "2026-27",
+  "verifiedAgainst": "UNVERIFIED - confirm against Finance Act 2026 before use",
+  "cessRate": 0.04,
+  "regimes": {
+    "new": {
+      "standardDeduction": 75000,
+      "rebateThreshold": 1200000,
+      "maximumRebate": 60000,
+      "allowsDeductions": false,
+      "allowsNewRegimeDeductions": false,
+      "section80CLimit": 0,
+      "section80DLimit": 0,
+      "otherDeductionsLimit": 0,
+      "ageCategories": {
+        "below60": [{"upTo":400000,"rate":0},{"upTo":800000,"rate":0.05},{"upTo":1200000,"rate":0.10},{"upTo":1600000,"rate":0.15},{"upTo":2000000,"rate":0.20},{"upTo":2400000,"rate":0.25},{"upTo":0,"rate":0.30}],
+        "60to79": [{"upTo":400000,"rate":0},{"upTo":800000,"rate":0.05},{"upTo":1200000,"rate":0.10},{"upTo":1600000,"rate":0.15},{"upTo":2000000,"rate":0.20},{"upTo":2400000,"rate":0.25},{"upTo":0,"rate":0.30}],
+        "80plus": [{"upTo":400000,"rate":0},{"upTo":800000,"rate":0.05},{"upTo":1200000,"rate":0.10},{"upTo":1600000,"rate":0.15},{"upTo":2000000,"rate":0.20},{"upTo":2400000,"rate":0.25},{"upTo":0,"rate":0.30}]
+      }
+    },
+    "old": {
+      "standardDeduction": 50000,
+      "rebateThreshold": 500000,
+      "maximumRebate": 12500,
+      "allowsDeductions": true,
+      "allowsNewRegimeDeductions": false,
+      "section80CLimit": 150000,
+      "section80DLimit": 100000,
+      "otherDeductionsLimit": 50000,
+      "ageCategories": {
+        "below60": [{"upTo":250000,"rate":0},{"upTo":500000,"rate":0.05},{"upTo":1000000,"rate":0.20},{"upTo":0,"rate":0.30}],
+        "60to79": [{"upTo":300000,"rate":0},{"upTo":500000,"rate":0.05},{"upTo":1000000,"rate":0.20},{"upTo":0,"rate":0.30}],
+        "80plus": [{"upTo":500000,"rate":0},{"upTo":1000000,"rate":0.20},{"upTo":0,"rate":0.30}]
+      }
+    }
+  }
+}

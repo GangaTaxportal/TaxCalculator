@@ -1,0 +1,19 @@
+# Node
+node_modules/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+bin/
+obj/
+
+# Python cache
+__pycache__/
+
+# IDE files
+.vs/
