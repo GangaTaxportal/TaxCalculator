@@ -5,14 +5,20 @@ using TaxCalculatorAPI.Validation;
 namespace TaxCalculatorAPI.Controllers;
 [ApiController]
 [Route("api/tax")]
-public sealed class TaxController(ITaxComparisonService service, CompareTaxRequestValidator validator) : ControllerBase
+public sealed class TaxController(ITaxComparisonService service) : ControllerBase
 {
     [HttpPost("compare")]
     public IActionResult Compare([FromBody] CompareTaxRequest request)
     {
-        var errors = validator.Validate(request);
-        if (errors.Count > 0) return BadRequest(new ValidationProblemDetails(errors));
-        try { return Ok(service.Compare(request)); }
-        catch (KeyNotFoundException ex) { return BadRequest(new ProblemDetails { Status = 400, Title = "Unsupported tax year", Detail = ex.Message }); }
+        var result = service.Compare(request);
+        return Ok(result);
+
+        //return result.ResultStatus switch
+        //{
+        //    Models.ResultStatus.Success => Ok(result.Data),
+        //    Models.ResultStatus.ValidationFailure => BadRequest(new ValidationProblemDetails(
+        //        new Dictionary<string, string[]> { ["request"] = [result.Message] })),
+        //    _ => Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Tax calculation failed", detail: result.Message)
+        //};
     }
 }

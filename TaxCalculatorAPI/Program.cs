@@ -11,17 +11,14 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails();
-builder.Services.AddSingleton<TaxCalculatorAPI.Services.TaxRuleProvider>();
-builder.Services.AddSingleton<TaxCalculatorAPI.Services.SlabCalculator>();
-builder.Services.AddSingleton<TaxCalculatorAPI.Services.OldRegimeCalculator>();
-builder.Services.AddSingleton<TaxCalculatorAPI.Services.NewRegimeCalculator>();
-builder.Services.AddScoped<TaxCalculatorAPI.Services.Interfaces.ITaxComparisonService, TaxCalculatorAPI.Services.TaxComparisonService>();
+builder.Services.AddScoped<TaxCalculatorAPI.Services.Interfaces.ITaxComparisonService, TaxCalculatorAPI.Services.TaxCalculatorService>();
 builder.Services.AddScoped<TaxCalculatorAPI.Validation.CompareTaxRequestValidator>();
 
 var app = builder.Build();
 
-// Validate externalized tax rules before accepting requests.
-_ = app.Services.GetRequiredService<TaxCalculatorAPI.Services.TaxRuleProvider>().Get("2026-27");
+// Resolve the service before serving requests so the configured rules are checked at startup.
+using (var scope = app.Services.CreateScope())
+    _ = scope.ServiceProvider.GetRequiredService<TaxCalculatorAPI.Services.Interfaces.ITaxComparisonService>();
 app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
