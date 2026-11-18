@@ -1,23 +1,49 @@
-const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const BASE = '/api'
 
 export async function compareTax(request) {
-  const endpoint = `${baseUrl}/api/tax/compare`
-  let response
+  const response = await fetch(`${BASE}/tax/compare`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(request),
+  })
+
+  const responseText = await response.text()
+  let payload = null
   try {
-    response = await fetch(endpoint, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(request),
-    })
-  } catch (cause) {
-    const target = baseUrl ? endpoint : '/api/tax/compare (Vite proxy → https://localhost:7206)'
-    throw new Error(`Could not reach ${target}. Start TaxCalculatorAPI with its HTTPS launch profile and confirm it is listening on https://localhost:7206.`, { cause })
+    payload = responseText ? JSON.parse(responseText) : null
+  } catch {
+    payload = null
   }
-  const data = await response.json().catch(() => ({}))
+
   if (!response.ok) {
-    const validationErrors = data.errors && Object.values(data.errors).flat()
-    throw Object.assign(new Error(data.detail || data.title || 'The request could not be processed.'), {
-      messages: validationErrors?.length ? validationErrors : [data.detail || data.title || `Request failed (${response.status}).`],
+    const validationErrors = payload?.errors && Object.values(payload.errors).flat()
+    const message = payload?.message || payload?.detail || payload?.title || responseText || `Request failed (${response.status}).`
+    throw Object.assign(new Error(message), {
+      messages: validationErrors?.length ? validationErrors : [message],
     })
   }
-  return data
+
+  const resultStatus = payload?.resultStatus ?? payload?.ResultStatus
+  const message = payload?.message ?? payload?.Message
+  switch (String(resultStatus).toLowerCase()) {
+    case 'success': {
+      const data = payload?.data ?? payload?.Data
+      if (data == null) {
+        const errorMessage = message || 'The tax API returned a successful status without result data.'
+        throw Object.assign(new Error(errorMessage), { messages: [errorMessage] })
+      }
+      return data
+    }
+    case 'validationfailure':
+    case 'error': {
+      const errorMessage = message || (String(resultStatus).toLowerCase() === 'validationfailure'
+        ? 'The tax calculation request did not pass validation.'
+        : 'The tax calculation failed.')
+      throw Object.assign(new Error(errorMessage), { messages: [errorMessage] })
+    }
+    default: {
+      const errorMessage = `The tax API returned an unsupported result status: ${String(resultStatus)}.`
+      throw Object.assign(new Error(errorMessage), { messages: [errorMessage] })
+    }
+  }
 }

@@ -29,3 +29,47 @@
   .comparison-results .final-tax>div strong{font-size:14px}
   .comparison-results .final-amount{font-size:24px}
 }
+
+/* Calculator form typography */
+.calculator-form .card-heading h2{font-size:18px}
+.calculator-form .card-heading p{font-size:13px}
+.calculator-form .field>span{font-size:13px;min-width:0;white-space:normal;overflow-wrap:anywhere}
+.calculator-form .money-input input{font-size:15px}
+.calculator-form .field select{font-size:14px}
+.calculator-form .field small{font-size:12px}
+
+@media(max-width:650px){
+  .calculator-form .field>span{font-size:12px}
+}
+
+/* Give the form more room while preserving a useful comparison column. */
+.layout-grid{grid-template-columns:minmax(0,1.12fr) minmax(520px,1fr)}
+.calculator-form .income-card .field-grid{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr)}
+.deduction-grid{grid-template-columns:minmax(0,1.45fr) minmax(0,.85fr)}
+
+@media(max-width:1200px){
+  .layout-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:1050px){
+  .calculator-form .income-card{grid-column:1/-1}
+}
+
+@media(max-width:650px){
+  .calculator-form .income-card .field-grid{grid-template-columns:1fr}
+  .deduction-grid{grid-template-columns:1fr}
+}
+
+/* Keep the old and new deduction cards together until the small-screen breakpoint. */
+.deduction-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)}
+.deduction-grid>.form-card{padding:16px 13px}
+.deduction-grid>.form-card:nth-child(2) .card-heading h2{letter-spacing:-.35px}
+
+@media(min-width:641px) and (max-width:650px){
+  .deduction-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)}
+}
+
+@media(max-width:640px){
+  .deduction-grid{grid-template-columns:1fr}
+  .deduction-grid>.form-card{padding:17px 15px}
+}
