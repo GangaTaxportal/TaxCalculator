@@ -1,12 +1,19 @@
-import { formatRupees } from '../utils/format.js'
+import { formatRupees } from '../utils/format'
+import type { TaxComparisonData, TaxRegimeResult } from '../types/tax'
 
 const rows = [
   ['Gross Total Income', 'grossTotalIncome'], ['Standard Deduction', 'standardDeduction'], ['Total Deductions', 'totalDeductions'],
   ['Taxable Income', 'taxableIncome'], ['Slab Tax', 'slabTax'], ['Section 87A Rebate', 'rebate87A'],
   ['Tax After Rebate', 'taxAfterRebate'], ['Surcharge', 'surcharge'], ['Health and Education Cess', 'healthAndEducationCess'],
-]
+] as const satisfies ReadonlyArray<readonly [string, keyof TaxRegimeResult]>
 
-function RegimeCard({ title, data, recommended }) {
+interface RegimeCardProps {
+  title: 'Old Regime' | 'New Regime'
+  data: TaxRegimeResult
+  recommended: boolean
+}
+
+function RegimeCard({ title, data, recommended }: RegimeCardProps) {
   return <article className={`regime-card ${recommended ? 'recommended' : ''}`}>
     <div className="regime-heading"><div><p className="regime-kicker">{title === 'Old Regime' ? 'DEDUCTIONS FIRST' : 'SIMPLER FILING'}</p><h3>{title}</h3></div>{recommended && <span className="recommended-badge"><span>✦</span> Recommended</span>}</div>
     <div className="result-rows">{rows.map(([label, key]) => <div className="result-row" key={key}><span>{label}</span><strong>{formatRupees(data?.[key])}</strong></div>)}</div>
@@ -15,7 +22,11 @@ function RegimeCard({ title, data, recommended }) {
   </article>
 }
 
-export default function ComparisonResults({ result }) {
+interface ComparisonResultsProps {
+  result: TaxComparisonData
+}
+
+export default function ComparisonResults({ result }: ComparisonResultsProps) {
   const recommendation = String(result.recommendedRegime || '').toLowerCase()
   const recommendedOld = recommendation === 'old'
   const recommendedNew = recommendation === 'new'

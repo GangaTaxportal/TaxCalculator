@@ -1,17 +1,47 @@
-import { updateFormValue } from '../utils/updateFormValue.js'
+import type { ChangeEvent, ChangeEventHandler, FormEventHandler, ReactNode } from 'react'
+import { updateFormValue } from '../utils/updateFormValue'
+import type { CalculatorFieldName, CalculatorFormValues, TaxAmountInput } from '../types/tax'
 
-const ageOptions = [['below60', 'Below 60 years'], ['60to79', '60 to 79 years'], ['80plus', '80 years and above']]
+const ageOptions = [
+  ['below60', 'Below 60 years'],
+  ['60to79', '60 to 79 years'],
+  ['80plus', '80 years and above'],
+] as const
 
-function MoneyField({ label, name, value, onChange, hint }) {
+interface MoneyFieldProps {
+  label: string
+  name: CalculatorFieldName
+  value: TaxAmountInput
+  onChange: ChangeEventHandler<HTMLInputElement | HTMLSelectElement>
+  hint?: string
+}
+
+function MoneyField({ label, name, value, onChange, hint }: MoneyFieldProps) {
   return <label className="field"><span>{label}</span><div className="money-input"><span aria-hidden="true">₹</span><input type="number" min="0" step="1" inputMode="decimal" name={name} value={value} onChange={onChange} /></div>{hint && <small>{hint}</small>}</label>
 }
 
-function Section({ title, description, icon, children, className = '' }) {
+interface SectionProps {
+  title: string
+  description?: string
+  icon: string
+  children: ReactNode
+  className?: string
+}
+
+function Section({ title, description, icon, children, className = '' }: SectionProps) {
   return <section className={`form-card ${className}`}><div className="card-heading"><div className="section-icon" aria-hidden="true">{icon}</div><div><h2>{title}</h2>{description && <p>{description}</p>}</div></div>{children}</section>
 }
 
-export default function TaxCalculatorForm({ values, onChange, onSubmit, onReset, loading }) {
-  const update = (event) => {
+interface TaxCalculatorFormProps {
+  values: CalculatorFormValues
+  onChange: (values: CalculatorFormValues) => void
+  onSubmit: FormEventHandler<HTMLFormElement>
+  onReset: () => void
+  loading: boolean
+}
+
+export default function TaxCalculatorForm({ values, onChange, onSubmit, onReset, loading }: TaxCalculatorFormProps) {
+  const update = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target
     // Keep numeric input values as strings while editing so an empty field stays empty.
     onChange(updateFormValue(values, name, value))

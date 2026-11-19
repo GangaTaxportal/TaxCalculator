@@ -1,27 +1,35 @@
 import { useState } from 'react'
-import { compareTax } from './Api/taxApi.js'
-import TaxCalculatorForm from './components/TaxCalculatorForm.jsx'
-import ComparisonResults from './components/ComparisonResults.jsx'
-import { createInitialValues } from './utils/initialValues.js'
-import { toTaxRequest } from './utils/taxRequest.js'
+import type { FormEvent } from 'react'
+import { compareTax, TaxApiError } from './Api/taxApi'
+import TaxCalculatorForm from './components/TaxCalculatorForm'
+import ComparisonResults from './components/ComparisonResults'
+import { createInitialValues } from './utils/initialValues'
+import { toTaxRequest } from './utils/taxRequest'
+import type { CalculatorFormValues, TaxComparisonData } from './types/tax'
 import './App.css'
 
 function App() {
-  const [values, setValues] = useState(createInitialValues)
+  const [values, setValues] = useState<CalculatorFormValues>(createInitialValues)
   const [formVersion, setFormVersion] = useState(0)
-  const [result, setResult] = useState(null)
+  const [result, setResult] = useState<TaxComparisonData | null>(null)
   const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState([])
+  const [errors, setErrors] = useState<string[]>([])
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setErrors([])
     setLoading(true)
     try {
       setResult(await compareTax(toTaxRequest(values)))
-    } catch (error) {
+    } catch (error: unknown) {
       setResult(null)
-      setErrors(error.messages?.length ? error.messages : [error.message || 'Unable to connect to the tax service. Please try again.'])
+      if (error instanceof TaxApiError) {
+        setErrors(error.messages)
+      } else if (error instanceof Error) {
+        setErrors([error.message || 'Unable to connect to the tax service. Please try again.'])
+      } else {
+        setErrors(['Unable to connect to the tax service. Please try again.'])
+      }
     } finally {
       setLoading(false)
     }
